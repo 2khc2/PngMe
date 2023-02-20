@@ -1,5 +1,6 @@
 pub mod chunk;
 pub mod chunk_type;
+
 mod cmd;
 mod commands;
 pub mod png;
@@ -12,14 +13,25 @@ use color_eyre::eyre::Result;
 use png::Png;
 use std::str::FromStr;
 pub type Error = Box<dyn std::error::Error>;
+use reqwest;
+
+use url::Url;
+
+fn parse(url: &str) -> Result<Url> {
+    Ok(Url::parse(url)?)
+}
 
 fn read_png(fp: std::path::PathBuf) -> Result<Png> {
-    Ok(Png::try_from(fs::read(fp)?.as_ref())?)
+    let url = parse(fp.to_str().unwrap());
+    if url.is_ok() {
+        let image = reqwest::blocking::get(url.unwrap().to_string())?.bytes()?;
+        Ok(Png::try_from(image.as_ref())?)
+    } else {
+        Ok(Png::try_from(fs::read(fp)?.as_ref())?)
+    }
 }
 
 fn main() -> Result<()> {
-    // let PngMeArgs(args) = PngMeArgs::parse() ;
-
     match PngMeArgs::parse() {
         PngMeArgs::Encode(args) => {
             let mut png = read_png(args.filepath)?;
