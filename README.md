@@ -11,6 +11,9 @@ It can then be used to recover the message from within the PNG file, or remove i
 
 ## How To Use
 ``` pngme encode ./image.png ruSt "secret message here" ./output.png ```
+
 ``` pngme decode ./image.png ruSt "secret message here" ```
+
 ``` pngme remove ./image.png ruSt ```
+
 ``` pngme print ./image.png ```
